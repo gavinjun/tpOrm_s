@@ -1,8 +1,32 @@
-# tpOrm_s
-将tp框架orm操作单独整理。可以根据tp的查询构造器返回sql语句
+<?php
+/**
+ * Created by PhpStorm.
+ * User: gavin
+ * Date: 2019/1/22
+ * Time: 下午7:43
+ */
+$dir = realpath('.');
+define('APP_ROOT',$dir.'/');
+function my_autoloader($class)
+{
+    if (class_exists($class, false))
+    {
+        return;
+    }
+    $file = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
+    $file = APP_ROOT . $file;
+    if (!file_exists($file))
+    {
+        throw new Exception('load class fail|' . $file);
+    }
+    require_once $file;
+    return;
+}
 
-Db类用法：
-~~~php
+spl_autoload_register('my_autoloader');
+/**
+ * 以下示例均出自tp5的官方文档查询构造器示例
+ */
 echo Lib_orm_Db::table('think_user')
     ->where('id','>',1)
     ->where('name','thinkphp')
@@ -285,4 +309,3 @@ echo Lib_orm_Db::table('think_user')->where('id','<',10)->getDeleteSql().PHP_EOL
 //删除操作需要带条件
 //echo Lib_orm_Db::name('user')->getDeleteSql().PHP_EOL;
 echo Lib_orm_Db::name('user')->getDeleteSql(true).PHP_EOL;
-~~~
