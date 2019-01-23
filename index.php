@@ -285,6 +285,14 @@ echo Lib_orm_Db::table('think_user')
         ->where('name','test')
         ->getSelectSql().PHP_EOL;
 
+//忽略索引
+echo Lib_orm_Db::table('think_user')
+        ->where('name', 'like', '%think%')
+        ->where('name', 'like', '%php%')
+        ->where('id', 'in', [1, 5, 80, 50])
+        ->where('id', '>', 10)
+        ->ignore('create_time')
+        ->getSelectSql().PHP_EOL;
 
 //示例补全
 

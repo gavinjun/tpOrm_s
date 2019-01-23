@@ -1250,6 +1250,19 @@ class Lib_orm_Query
         return $this;
     }
 
+
+    /**
+     * 忽略索引
+     * @access public
+     * @param string $force 索引名称
+     * @return $this
+     */
+    public function ignore($ignore)
+    {
+        $this->options['ignore'] = $ignore;
+        return $this;
+    }
+
     /**
      * 查询注释
      * @access public
@@ -1737,7 +1750,7 @@ class Lib_orm_Query
         }
 
 
-        foreach (['join', 'union', 'group', 'having', 'limit', 'force', 'comment'] as $name) {
+        foreach (['join', 'union', 'group', 'having', 'limit', 'force', 'comment','ignore'] as $name) {
             if (!isset($options[$name])) {
                 $options[$name] = '';
             }

@@ -21,7 +21,7 @@ abstract class Lib_orm_Builder
     ];
 
     // SQL表达式
-    protected $selectSql = 'SELECT%DISTINCT% %FIELD% FROM %TABLE%%FORCE%%JOIN%%WHERE%%GROUP%%HAVING%%UNION%%ORDER%%LIMIT%%LOCK%%COMMENT%';
+    protected $selectSql = 'SELECT%DISTINCT% %FIELD% FROM %TABLE%%FORCE%%IGNORE%%JOIN%%WHERE%%GROUP%%HAVING%%UNION%%ORDER%%LIMIT%%LOCK%%COMMENT%';
 
     protected $insertSql = '%INSERT% INTO %TABLE% (%FIELD%) VALUES (%DATA%) %COMMENT%';
 
@@ -840,6 +840,27 @@ abstract class Lib_orm_Builder
     }
 
     /**
+     * index分析，可在操作链中指定需要忽略使用的索引
+     * @access protected
+     * @param Query     $query        查询对象
+     * @param mixed     $index
+     * @return string
+     */
+    protected function parseIgnore(Lib_orm_Query $query, $index)
+    {
+        if (empty($index)) {
+            return '';
+        }
+
+        if (is_array($index)) {
+            $index = join(",", $index);
+        }
+
+        return sprintf(" IGNORE INDEX ( %s ) ", $index);
+    }
+
+
+    /**
      * 设置锁机制
      * @access protected
      * @param Query         $query        查询对象
@@ -866,7 +887,7 @@ abstract class Lib_orm_Builder
         $options = $query->getOptions();
 
         return str_replace(
-            ['%TABLE%', '%DISTINCT%', '%FIELD%', '%JOIN%', '%WHERE%', '%GROUP%', '%HAVING%', '%ORDER%', '%LIMIT%', '%UNION%', '%LOCK%', '%COMMENT%', '%FORCE%'],
+            ['%TABLE%', '%DISTINCT%', '%FIELD%', '%JOIN%', '%WHERE%', '%GROUP%', '%HAVING%', '%ORDER%', '%LIMIT%', '%UNION%', '%LOCK%', '%COMMENT%', '%FORCE%', '%IGNORE%'],
             [
                 $this->parseTable($query, $options['table']),
                 $this->parseDistinct($query, $options['distinct']),
@@ -881,6 +902,7 @@ abstract class Lib_orm_Builder
                 $this->parseLock($query, $options['lock']),
                 $this->parseComment($query, $options['comment']),
                 $this->parseForce($query, $options['force']),
+                $this->parseIgnore($query, $options['ignore']),
             ],
             $this->selectSql);
     }
